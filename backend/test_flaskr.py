@@ -15,8 +15,15 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
-        self.database_path = "postgres://{}/{}".format('localhost:5432', self.database_name)
+        self.database_path = "postgresql://{}/{}".format('postgres:abc@localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
+
+        self.new_question = {
+            "question": "Who create python programming language",
+            "answer": "Guido Van Rossum",
+            "difficulty": "1",
+            "category": "1"
+        }
 
         # binds the app to the current context
         with self.app.app_context():
@@ -24,7 +31,7 @@ class TriviaTestCase(unittest.TestCase):
             self.db.init_app(self.app)
             # create all tables
             self.db.create_all()
-    
+
     def tearDown(self):
         """Executed after reach test"""
         pass
@@ -33,6 +40,96 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
+    def test_get_paginated_questions(self):
+        """
+        Test get_paginated_questions
+        """
+        res = self.client().get("/questions")
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data["questions"])
+        self.assertTrue(len(data["questions"]))
+
+    def test_404_sent_requesting_beyond_valid_page(self):
+        """
+        Test that the beyond valid_page param is passed to get_paginated_questions
+        """
+        res = self.client().get("/books?page=1000")
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "resource not found")
+
+
+    def test_get_categories(self):
+        """
+        Test the get_categories method
+        """
+        res = self.client().get("/categories")
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data["categories"])
+        self.assertTrue(len(data["categories"]))
+
+
+#     def test_delete_question(self):
+#         """
+#         Test deleting a question
+#         """
+#         res = self.client().delete("/questions/16")
+#         data = json.loads(res.data)
+#
+#         question = Question.query.filter(Question.id == 16).first()
+#
+#         self.assertEqual(res.status_code, 200)
+#         self.assertEqual(data["deleted"], 16)
+#         self.assertTrue(data["total_questions"])
+#         self.assertTrue(len(data["questions"]))
+#         self.assertEqual(question, None)
+
+    def test_422_if_question_does_not_exist(self):
+        """
+        If a question does not exist, an error should be thrown.
+        """
+        res = self.client().delete("/questions/1000")
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "unprocessable")
+
+    def test_add_new_question(self):
+        """
+        Test adding a new question
+        """
+        res = self.client().post("/questions", json=self.new_question)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data["question"])
+        self.assertTrue(data["answer"])
+        self.assertTrue(data["category"])
+        self.assertTrue(data["difficulty"])
+
+    def test_405_if_question_adding_not_allowed(self):
+        """
+        Test If a question is not allowed, an error should be thrown.
+        """
+
+        res = self.client().post("/questions/45", json=self.new_question)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 405)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "method not allowed")
+
+
+
+
+
 
 
 # Make the tests conveniently executable

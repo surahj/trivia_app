@@ -126,6 +126,29 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "method not allowed")
 
+    def test_get_question_search_with_result(self):
+        """
+        Test searching for questions with search term with result
+        """
+        res = self.client().post("/questions", json={"search":"what"})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data["questions"])
+        self.assertTrue(data["total_questions"])
+
+    def test_get_question_search_without_result(self):
+        """
+        Test searching for questions with search term without result
+        """
+        res = self.client().post("/questions", json={"search":"opeyemi"})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(data["questions"])
+        self.assertFalse(data["total_questions"])
+
+
 
 
 

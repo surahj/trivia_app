@@ -163,16 +163,16 @@ def create_app(test_config=None):
             new_answer = body.get("answer", None)
             new_category = body.get("category", None)
             new_difficulty = body.get("difficulty", None)
-            search = body.get("search", None)
+            search = body.get("searchTerm", None)
 
             if search:
-                selection = Question.query.order_by(Question.id).filter(Question.question.ilike(f"%{search}%"))
+                selection = Question.query.order_by(Question.id).filter(Question.question.ilike(f"%{search}%")).all()
                 current_questions = paginate_questions(request, selection)
 
                 return jsonify(
                     {
                         "questions": current_questions,
-                        "total_questions": len(selection.all()),
+                        "total_questions": len(selection),
                         "current_category": None
                     }
                 )
@@ -217,6 +217,33 @@ def create_app(test_config=None):
     categories in the left column will cause only questions of that
     category to be shown.
     '''
+
+    @app.route("/categories/<int:category_id>/questions")
+    def get_questions_by_category(category_id):
+        """
+        Get a list of questions for a category.
+        """
+        try:
+            selection = Question.query.filter(Question.category==category_id).all()
+
+            current_questions = paginate_questions(request, selection)
+
+            if len(current_questions) == 0:
+                abort(404)
+
+            return jsonify(
+                {
+                    "questions": current_questions,
+                    "current_category": category_id,
+                    "total_questions": len(selection)
+                }
+                )
+
+        except Exception:
+            abort(422)
+
+
+
 
 
     '''

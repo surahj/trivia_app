@@ -130,7 +130,7 @@ class TriviaTestCase(unittest.TestCase):
         """
         Test searching for questions with search term with result
         """
-        res = self.client().post("/questions", json={"search":"what"})
+        res = self.client().post("/questions", json={"searchTerm":"what"})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -141,12 +141,36 @@ class TriviaTestCase(unittest.TestCase):
         """
         Test searching for questions with search term without result
         """
-        res = self.client().post("/questions", json={"search":"opeyemi"})
+        res = self.client().post("/questions", json={"searchTerm":"opeyemi"})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertFalse(data["questions"])
         self.assertFalse(data["total_questions"])
+
+    def test_get_questions_by_category(self):
+        """
+        Test getting questions by category
+        """
+        res = self.client().get("/categories/2/questions")
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data["questions"])
+        self.assertTrue(data["current_category"])
+        self.assertTrue(data["total_questions"])
+
+    def test_422_if_category_does_not_exist(self):
+        """
+        Test getting questions by category and category does not exist
+        """
+        res = self.client().get("/categories/7777/questions")
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "unprocessable")
+
 
 
 

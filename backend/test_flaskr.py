@@ -25,6 +25,11 @@ class TriviaTestCase(unittest.TestCase):
             "category": "1"
         }
 
+        self.new_quiz = {
+            "previous_questions": ['3', '8', '11', '25', '14'],
+            "quiz_category": {"type": "Scienc", "id": "1"},
+        }
+
         # binds the app to the current context
         with self.app.app_context():
             self.db = SQLAlchemy()
@@ -170,6 +175,27 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "unprocessable")
+
+    def test_post_quiz_by_category(self):
+        """
+        Test postind quiz by category
+        """
+        res = self.client().post("/quizzes", json=self.new_quiz)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data["question"])
+        self.assertTrue(data["success"])
+
+    def test_405_if_quiz_does_not_exist(self):
+        """
+        Test posting quiz by category and category does not exist
+        """
+        res = self.client().post("/quizzes/875435", json=self.new_quiz)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data["success"], False)
 
 
 

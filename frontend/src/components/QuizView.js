@@ -68,7 +68,7 @@ class QuizView extends Component {
         })
       },
       error: (error) => {
-        alert('Unable to load question. Please try your request again')
+        alert('Unable to load question. Please try your request again!')
       }
     })
   }

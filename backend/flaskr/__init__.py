@@ -86,7 +86,7 @@ def create_app(test_config=None):
         """
         endpoint to handle GET requests for questions
         """
-        selection = Question.query.order_by(Question.id).all()
+        selection = Question.query.filter(Question.question != None).all()
         categories = Category.query.all()
         # for category in categories:
         #     print(category.id, category.type)
@@ -98,7 +98,7 @@ def create_app(test_config=None):
         return jsonify(
             {
                 "questions": current_questions,
-                "total_questions": len(Question.query.all()),
+                "total_questions": len(selection),
                 "categories": {
                 category.id: category.type for category in categories},
                 "current_category": None

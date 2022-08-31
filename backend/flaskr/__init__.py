@@ -126,7 +126,7 @@ def create_app(test_config=None):
                 abort(404)
 
             question.delete()
-            selection = Question.query.order_by(Question.id).all()
+            selection = Question.query.order_by(Question.id).filter(Question.question != None).all()
             current_questions = paginate_questions(request, selection)
 
             return jsonify(
@@ -134,7 +134,7 @@ def create_app(test_config=None):
                     "success": True,
                     "deleted": question_id,
                     "questions": current_questions,
-                    "total_questions": len(Question.query.all()),
+                    "total_questions": len(selection),
                     "current_category": None
                 }
             )
@@ -268,9 +268,7 @@ def create_app(test_config=None):
         try:
             body = request.get_json()
             previous_questions = body.get("previous_questions", None)
-            print(previous_questions)
             quiz_category = body.get("quiz_category", None)
-            print(quiz_category)
 
             if quiz_category:
                 questions = Question.query.filter_by(category=quiz_category['id']).filter(Question.id.notin_(previous_questions)).all()

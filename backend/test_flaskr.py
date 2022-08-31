@@ -27,7 +27,7 @@ class TriviaTestCase(unittest.TestCase):
 
         self.new_quiz = {
             "previous_questions": ['3', '8', '11', '25', '14'],
-            "quiz_category": {"type": "Scienc", "id": "1"},
+            "quiz_category": {"type": "Science", "id": "1"},
         }
 
         # binds the app to the current context

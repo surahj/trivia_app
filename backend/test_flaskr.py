@@ -80,20 +80,20 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(len(data["categories"]))
 
 
-#     def test_delete_question(self):
-#         """
-#         Test deleting a question
-#         """
-#         res = self.client().delete("/questions/16")
-#         data = json.loads(res.data)
-#
-#         question = Question.query.filter(Question.id == 16).first()
-#
-#         self.assertEqual(res.status_code, 200)
-#         self.assertEqual(data["deleted"], 16)
-#         self.assertTrue(data["total_questions"])
-#         self.assertTrue(len(data["questions"]))
-#         self.assertEqual(question, None)
+    def test_delete_question(self):
+        """
+        Test deleting a question
+        """
+        res = self.client().delete("/questions/15")
+        data = json.loads(res.data)
+
+        question = Question.query.filter(Question.id == 15).first()
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["deleted"], 15)
+        self.assertTrue(data["total_questions"])
+        self.assertTrue(len(data["questions"]))
+        self.assertEqual(question, None)
 
     def test_422_if_question_does_not_exist(self):
         """

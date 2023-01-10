@@ -10,6 +10,10 @@ The application allows the following:
 4. Search for questions based on a text query string.
 5. Play the quiz game, randomizing either all questions or within a specific category.
 
+### Demo
+
+![Demo](./demo.gif)
+
 
 ## Getting Started
 
